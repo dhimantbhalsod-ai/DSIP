@@ -1,0 +1,83 @@
+from google.colab import files
+import os
+
+print("Please upload your image file (JPEG or PNG). It will be saved as 'image.jpg'")
+uploaded = files.upload()
+
+for fn in uploaded.keys():
+  os.rename(fn, '/content/image.png')
+  print(f'Successfully uploaded and renamed {fn} to /content/image.jpg')
+
+
+import numpy as np
+import cv2
+
+# Create a 400x400 blank grayscale image
+img_size = 400
+synthetic_img = np.ones((img_size, img_size), dtype=np.uint8) * 255
+
+# Draw some distinct geometric patterns (lines, circles, rectangles)
+# These shapes provide sharp edges which are excellent for viewing High-Pass Filter results
+cv2.circle(synthetic_img, (200, 200), 80, 0, -1)             # Dark central circle
+cv2.rectangle(synthetic_img, (50, 50), (150, 150), 100, -1)   # Gray square
+cv2.rectangle(synthetic_img, (250, 250), (350, 350), 180, -1) # Light gray square
+
+# Draw some stripes/grid lines to show frequency patterns
+for i in range(0, img_size, 40):
+    cv2.line(synthetic_img, (i, 0), (i, img_size), 50, 2)
+    cv2.line(synthetic_img, (0, i), (img_size, i), 50, 2)
+
+# Save the generated synthetic image
+cv2.imwrite('/content/image.jpg', synthetic_img)
+print("Successfully generated a synthetic test image and saved it as '/content/image.jpg'!")
+
+
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 1. Read image using image path in grayscale
+img = cv2.imread('/content/image.jpg', 0)
+
+if img is None:
+    print("Error: Could not load '/content/image.jpg'. Please make sure you uploaded the image.")
+else:
+    # 2. Fourier Transform
+    F = np.fft.fftshift(np.fft.fft2(img))
+    M, N = img.shape
+
+    # 3. Create frequency distance matrix
+    u, v = np.meshgrid(np.arange(N)-N//2, np.arange(M)-M//2)
+    D = np.sqrt(u**2 + v**2)
+
+    # 4. Low-Pass and High-Pass Filters
+    LPF = D < 30
+    HPF = D >= 30
+
+    # 5. Apply filters
+    smooth = np.abs(np.fft.ifft2(np.fft.ifftshift(F * LPF)))
+    high_pass = np.abs(np.fft.ifft2(np.fft.ifftshift(F * HPF)))
+    sharp = np.clip(img.astype(float) + high_pass, 0, 255)
+
+    # 6. Display images
+    plt.figure(figsize=(12, 4))
+
+    plt.subplot(1, 3, 1)
+    plt.imshow(img, cmap='gray')
+    plt.title('Original Image')
+    plt.axis('off')
+
+    plt.subplot(1, 3, 2)
+    plt.imshow(smooth, cmap='gray')
+    plt.title('LPF - Smoothening')
+    plt.axis('off')
+
+    plt.subplot(1, 3, 3)
+    plt.imshow(sharp, cmap='gray')
+    plt.title('HPF - Sharpening')
+    plt.axis('off')
+
+    plt.show()
+
+
+
