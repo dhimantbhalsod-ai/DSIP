@@ -1,0 +1,74 @@
+1. FIR LOW PASS Filter filter having cutoff frequency 3 KHz, N=31; Sampling frequency=10
+KHz
+CODE : import numpy as np
+import matplotlib.pyplot as plt
+from scipy.signal import firwin, freqz
+Fs = 10000
+Fc = 3000
+N = 31
+b = firwin(numtaps=N, cutoff=Fc, window='hann', pass_zero='lowpass', fs=Fs)
+f, H = freqz(b, worN=2048, fs=Fs)
+magnitude_db = 20 * np.log10(np.maximum(np.abs(H), 1e-10))
+plt.plot(f, magnitude_db)
+plt.title('FIR Low-Pass Filter')
+plt.xlabel('Frequency (Hz)')
+plt.ylabel('Magnitude (dB)')
+plt.grid(True)
+plt.show()
+
+2. FIR High pass filter having cutoff frequency 3 KHz, N=31; Sampling frequency=10 KHz
+CODE : import numpy as np
+import matplotlib.pyplot as plt
+from scipy.signal import firwin, freqz
+Fs = 10000
+Fc = 3000
+N = 31
+b = firwin(numtaps=N, cutoff=Fc, window='hann', pass_zero='highpass', fs=Fs)
+f, H = freqz(b, worN=2048, fs=Fs)
+magnitude_db = 20 * np.log10(np.maximum(np.abs(H), 1e-10))
+plt.plot(f, magnitude_db)
+plt.title('FIR High-Pass Filter')
+plt.xlabel('Frequency (Hz)')
+plt.ylabel('Magnitude (dB)')
+plt.grid(True)
+plt.show()
+
+
+3. FIR Band pass filter having cutoff frequency( 3 KHz, 6 KHz) N=31; Sampling frequency=10
+KHz
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.signal import firwin, freqz
+# Increased Fs to 14000 so that Fs/2 (7000) is greater than the 6000 Hz cutoff
+Fs = 14000
+Fc = [3000, 6000]
+N = 31
+b = firwin(numtaps=N, cutoff=Fc, window='hann', pass_zero='bandpass', fs=Fs)
+f, H = freqz(b, worN=2048, fs=Fs)
+magnitude_db = 20 * np.log10(np.maximum(np.abs(H), 1e-10))
+plt.plot(f, magnitude_db)
+plt.title('FIR Band-Pass Filter (Adjusted Fs)')
+plt.xlabel('Frequency (Hz)')
+plt.ylabel('Magnitude (dB)')
+plt.grid(True)
+plt.show()
+
+
+4. FIR Band stop filter having cutoff frequency( 3 KHz, 6 KHz) N=31; Sampling frequency=10
+KHz
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.signal import firwin, freqz
+# Increased Fs to 14000 so that Fs/2 (7000) is greater than the 6000 Hz cutoff
+Fs = 14000
+Fc = [3000, 6000]
+N = 31
+b = firwin(numtaps=N, cutoff=Fc, window='hann', pass_zero='bandstop', fs=Fs)
+f, H = freqz(b, worN=2048, fs=Fs)
+magnitude_db = 20 * np.log10(np.maximum(np.abs(H), 1e-10))
+plt.plot(f, magnitude_db)
+plt.title('FIR Band-Stop Filter (Adjusted Fs)')
+plt.xlabel('Frequency (Hz)')
+plt.ylabel('Magnitude (dB)')
+plt.grid(True)
+plt.show()
