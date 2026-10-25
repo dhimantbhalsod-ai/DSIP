@@ -1,0 +1,34 @@
+import cv2
+import numpy as np
+from google.colab.patches import cv2_imshow
+from google.colab import files
+
+# Prompt the user to upload a binary/grayscale image
+print("Please upload your image:")
+uploaded = files.upload()
+
+# Get the exact filename of the uploaded image
+filename = next(iter(uploaded))
+
+# Load the binary image as grayscale (0 flag)
+image = cv2.imread(filename, 0)
+
+if image is None:
+    print("Error: Could not load the image. Please make sure it is a valid image file.")
+else:
+    # Define the structuring element for the pattern to be detected 
+    # (0 for don't care, 1 for foreground, -1 for background)
+    pattern = np.array([[-1, 1, -1],
+                        [1, 1, 1],
+                        [-1, 1, -1]], dtype=np.int8)
+
+    # Apply the Hit or Miss Transformation
+    result = cv2.morphologyEx(image, cv2.MORPH_HITMISS, pattern)
+
+    # Display the original image and the result
+    print(f"\n--- Results for {filename} ---")
+    print("Original Image:")
+    cv2_imshow(image)
+    
+    print("Hit or Miss Result:")
+    cv2_imshow(result)
